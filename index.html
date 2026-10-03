@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syllabiq - Personalized Syllabus Study Guide, Notes & Assessments</title>
+  <meta name="description" content="Personalized study guide application organized by your course syllabus. Features structured notes, interactive practice quizzes, and unit assessments.">
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top App Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-section">
+        <div class="brand-logo" aria-hidden="true">⚡</div>
+        <div>
+          <h1 class="brand-title">Syllabiq</h1>
+          <p class="brand-subtitle">Personalized Syllabus Study System</p>
+        </div>
+      </div>
+
+      <!-- User Stats & Profile Navigation -->
+      <div class="user-meta-bar">
+        <div class="streak-badge" id="streakBadge" title="Consecutive active study days">
+          <span aria-hidden="true">🔥</span>
+          <span id="streakCount">4</span> Days
+        </div>
+
+        <div class="mastery-pill" title="Overall syllabus topics completed">
+          <span class="section-label" style="font-size: 0.7rem;">Syllabus Mastery</span>
+          <div class="mastery-bar-mini">
+            <div class="mastery-fill-mini" id="headerMasteryFill"></div>
+          </div>
+          <span id="headerMasteryText" style="font-weight: 700; font-size: 0.8rem;">0%</span>
+        </div>
+
+        <button class="user-profile-btn" id="openProfileBtn" aria-label="Open student profile settings">
+          <span id="profileAvatar">🎓</span>
+          <span id="profileNameDisplay">Alex Morgan</span>
+        </button>
+
+        <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle dark/light theme" title="Toggle theme">
+          <span id="themeIcon">☀️</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <main class="app-container">
+    <!-- Left Sidebar: Syllabus Selection, Unit Tree & Filter -->
+    <aside class="sidebar" aria-label="Syllabus Navigation">
+      <div class="sidebar-card">
+        <div class="syllabus-selector-header">
+          <span class="section-label">Active Syllabus</span>
+          <span id="syllabusCountBadge" class="badge-tag">2 available</span>
+        </div>
+
+        <!-- Syllabus Select Dropdown -->
+        <div class="select-wrapper">
+          <select id="syllabusSelect" class="syllabus-select" aria-label="Select active course syllabus">
+            <!-- Populated via app.js -->
+          </select>
+          <span class="select-icon" aria-hidden="true">▼</span>
+        </div>
+
+        <!-- Quick syllabus management actions -->
+        <div class="syllabus-quick-actions">
+          <button class="btn-sm-action" id="openNewSyllabusBtn" title="Create or import new syllabus">
+            <span>➕</span> New / Import
+          </button>
+          <button class="btn-sm-action" id="openAddTopicBtn" title="Add a custom topic to current unit">
+            <span>📝</span> Add Topic
+          </button>
+        </div>
+
+        <!-- Search input for syllabus topics -->
+        <div class="search-box">
+          <span class="search-icon" aria-hidden="true">🔍</span>
+          <input type="text" id="topicSearch" class="search-input" placeholder="Filter topics or concepts..." aria-label="Filter topics or concepts">
+        </div>
+
+        <!-- Units & Topics Hierarchy -->
+        <div class="syllabus-selector-header" style="margin-top: 0.5rem;">
+          <span class="section-label">Course Outline</span>
+          <span id="topicCountDisplay" class="badge-tag" style="font-size: 0.7rem;">0 topics</span>
+        </div>
+        
+        <div class="units-container" id="unitsContainer" role="navigation" aria-label="Units and Topics outline">
+          <!-- Populated dynamically via app.js -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area: Topic Viewer & 3 Study Tabs -->
+    <section class="main-content" aria-label="Study Module">
+      <!-- Active Topic Header Card -->
+      <article class="content-hero-card" id="topicHeroCard">
+        <div class="hero-breadcrumbs">
+          <span id="crumbSyllabus">Computer Science</span>
+          <span class="sep">/</span>
+          <span id="crumbUnit">Unit 1</span>
+          <span class="sep">/</span>
+          <span id="crumbTopic">Big-O Notation</span>
+        </div>
+
+        <div class="hero-main-row">
+          <div>
+            <h2 class="hero-title" id="activeTopicTitle">Big-O Notation & Time Complexity</h2>
+            <div class="hero-badges" style="margin-top: 0.4rem;">
+              <span class="badge-tag highlight" id="topicDurationBadge">⏱️ 30 min read</span>
+              <span class="badge-tag" id="topicUnitNameBadge">Unit 1</span>
+            </div>
+          </div>
+
+          <div>
+            <button class="btn-toggle-mastery" id="toggleMasteryBtn" aria-pressed="false">
+              <span id="masteryIcon">○</span>
+              <span id="masteryBtnLabel">Mark as Mastered</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- 3 Primary Study Tabs -->
+      <nav class="study-tabs-nav" role="tablist" aria-label="Study Mode Tabs">
+        <button class="tab-btn active" id="tabNotesBtn" role="tab" aria-selected="true" aria-controls="paneNotes">
+          <span>📝 Notes & Guide</span>
+        </button>
+        <button class="tab-btn" id="tabQuizBtn" role="tab" aria-selected="false" aria-controls="paneQuiz">
+          <span>❓ Practice Quiz</span>
+          <span class="tab-count-badge" id="quizCountBadge">3</span>
+        </button>
+        <button class="tab-btn" id="tabAssessmentBtn" role="tab" aria-selected="false" aria-controls="paneAssessment">
+          <span>📊 Unit Assessment</span>
+          <span class="tab-count-badge" id="assessmentBadge">Exam</span>
+        </button>
+      </nav>
+
+      <!-- Tab 1: Notes & Study Guide -->
+      <div class="tab-pane active" id="paneNotes" role="tabpanel" aria-labelledby="tabNotesBtn">
+        <div class="notes-container">
+          <!-- Structured Curated Notes -->
+          <div class="curated-notes-card">
+            <div id="notesRenderArea" class="notes-render">
+              <!-- Rendered via JS -->
+            </div>
+
+            <div class="takeaways-box" id="takeawaysBox">
+              <div class="takeaways-title">
+                <span>⚡</span> Key Concepts & Takeaways
+              </div>
+              <ul class="takeaways-list" id="takeawaysList">
+                <!-- Rendered via JS -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Personal Student Notes Sidebar -->
+          <div class="personal-notes-card">
+            <div class="personal-notes-header">
+              <div class="personal-notes-title">
+                <span>✍️</span> My Study Notes
+              </div>
+              <div class="notes-save-status" id="notesSaveStatus">
+                <span>✓</span> Saved
+              </div>
+            </div>
+            <textarea id="personalNotesTextarea" class="personal-notes-textarea" placeholder="Type your personal insights, formulas, mnemonics, or revision questions here... (Auto-saved)"></textarea>
+            <div class="personal-notes-actions">
+              <button class="btn-secondary" id="insertBulletBtn" title="Insert bullet list item">• Bullet</button>
+              <button class="btn-secondary" id="insertFormulaBtn" title="Insert formula template">∑ Formula</button>
+              <button class="btn-secondary" id="clearNotesBtn" title="Clear notes for this topic">Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Interactive Practice Quiz -->
+      <div class="tab-pane" id="paneQuiz" role="tabpanel" aria-labelledby="tabQuizBtn">
+        <div class="quiz-wrapper" id="quizCard">
+          <!-- Active Quiz Mode -->
+          <div id="quizActiveState">
+            <div class="quiz-header-bar">
+              <div class="quiz-progress-info">
+                <span class="quiz-step-counter" id="quizStepCounter">Question 1 of 3</span>
+                <div class="quiz-progress-track">
+                  <div class="quiz-progress-fill" id="quizProgressFill"></div>
+                </div>
+              </div>
+              <div class="quiz-score-badge" id="quizCurrentScoreBadge">
+                Score: <span id="quizScoreNumber">0</span> pts
+              </div>
+            </div>
+
+            <div class="quiz-question-card">
+              <h3 class="question-text" id="quizQuestionText">Loading question...</h3>
+              <div class="options-grid" id="quizOptionsGrid">
+                <!-- Populated dynamically -->
+              </div>
+              <div class="quiz-explanation-box" id="quizExplanationBox">
+                <strong>Explanation:</strong> <span id="quizExplanationText"></span>
+              </div>
+            </div>
+
+            <div class="quiz-nav-row">
+              <button class="btn-secondary" id="prevQuizBtn" disabled>← Previous</button>
+              <button class="btn-primary" id="nextQuizBtn" disabled>Next Question →</button>
+            </div>
+          </div>
+
+          <!-- Quiz Completion View -->
+          <div id="quizFinishedState" class="quiz-finished-card" style="display: none;">
+            <div class="finished-badge-icon" id="quizOutcomeIcon">🎉</div>
+            <h3 class="finished-score-title" id="quizFinalScoreTitle">Quiz Completed!</h3>
+            <p class="finished-score-desc" id="quizFinalScoreDesc">You scored 3 out of 3 (100%). Excellent mastery of this topic!</p>
+            <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+              <button class="btn-secondary" id="retakeQuizBtn">↺ Retake Quiz</button>
+              <button class="btn-primary" id="continueToAssessmentBtn">Jump to Unit Assessment →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Unit Assessment -->
+      <div class="tab-pane" id="paneAssessment" role="tabpanel" aria-labelledby="tabAssessmentBtn">
+        <div class="assessment-container">
+          <!-- State A: Overview / Start Card -->
+          <div class="assessment-overview-card" id="assessmentOverviewCard">
+            <div class="assessment-meta-left">
+              <span class="section-label" style="color: var(--accent-primary);">Comprehensive Evaluation</span>
+              <h3 class="assessment-title" id="unitAssessmentTitle">Unit 1 Assessment: Algorithmic Complexity</h3>
+              <p class="assessment-desc" id="unitAssessmentDesc">
+                Test your comprehensive knowledge across all topics in this syllabus unit. Includes time limits, mastery evaluation, and personalized study recommendations.
+              </p>
+              <div class="assessment-specs">
+                <span class="spec-item"><strong id="assessmentQCount">4</strong> Questions</span>
+                <span class="spec-item">•</span>
+                <span class="spec-item">⏱️ <strong id="assessmentDuration">15</strong> Minutes</span>
+                <span class="spec-item">•</span>
+                <span class="spec-item">🎯 <strong id="assessmentPassingScore">70%</strong> to Pass</span>
+              </div>
+            </div>
+
+            <div>
+              <button class="btn-primary" id="startAssessmentBtn" style="padding: 0.85rem 1.75rem; font-size: 1rem;">
+                🚀 Start Assessment
+              </button>
+            </div>
+          </div>
+
+          <!-- State B: Active Test Session -->
+          <div class="assessment-active-card" id="assessmentActiveCard" style="display: none;">
+            <div class="assessment-timer-bar">
+              <div>
+                <strong id="assessmentExamName">Unit 1 Assessment</strong>
+                <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 0.5rem;" id="assessmentAnsweredRatio">0 of 4 Answered</span>
+              </div>
+              <div class="timer-display" id="assessmentTimerDisplay">
+                <span>⏳</span> <span id="timerCountdown">15:00</span>
+              </div>
+            </div>
+
+            <!-- List of assessment questions -->
+            <form id="assessmentForm" class="assessment-questions-list">
+              <!-- Rendered via assessment.js -->
+            </form>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1.5rem; gap: 1rem;">
+              <button type="button" class="btn-secondary" id="cancelAssessmentBtn">Discard</button>
+              <button type="button" class="btn-primary" id="submitAssessmentBtn">Submit & View Assessment Report</button>
+            </div>
+          </div>
+
+          <!-- State C: Assessment Results & Personalized Diagnostic -->
+          <div class="assessment-results-card" id="assessmentResultsCard" style="display: none;">
+            <div class="results-score-banner" id="resultsScoreBanner">
+              <div>
+                <span class="section-label">Performance Diagnostic</span>
+                <div class="results-score-number" id="resultsPercentage">85%</div>
+                <p id="resultsStatusMessage" style="font-size: 0.9rem; margin-top: 0.25rem;">Congratulations! You demonstrated strong mastery of this unit.</p>
+              </div>
+              <div>
+                <span class="badge-tag highlight" id="resultsScoreRaw" style="font-size: 0.9rem; padding: 0.4rem 1rem;">3 / 4 Correct</span>
+              </div>
+            </div>
+
+            <div class="recommendations-box">
+              <div class="rec-title">
+                <span>🧠</span> Personalized Study Recommendations
+              </div>
+              <div id="personalizedRecsList">
+                <!-- Dynamically generated based on wrong/right answers -->
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.5rem;">
+              <button class="btn-secondary" id="retakeAssessmentBtn">↺ Retake Assessment</button>
+              <button class="btn-primary" id="backToNotesBtn">← Review Topic Notes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal 1: Create or Import Syllabus -->
+  <div class="modal-overlay" id="newSyllabusModal" role="dialog" aria-modal="true" aria-labelledby="modalNewSyllabusTitle">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalNewSyllabusTitle">Create or Import Syllabus</h3>
+        <button class="modal-close-btn" id="closeNewSyllabusModal" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="newSyllabusTitle">Course / Subject Name</label>
+          <input type="text" id="newSyllabusTitle" class="form-input" placeholder="e.g. Physics: Mechanics & Thermodynamics" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newSyllabusCategory">Category / Field</label>
+          <input type="text" id="newSyllabusCategory" class="form-input" placeholder="e.g. Science, Engineering, Humanities">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newSyllabusOutline">
+            Syllabus Outline (Quick Importer)
+          </label>
+          <div class="form-helper" style="margin-bottom: 0.35rem;">
+            Format units with "Unit:" or "#" and topics with bullet points "- Topic Name". Or paste plain text!
+          </div>
+          <textarea id="newSyllabusOutline" class="form-textarea" placeholder="Unit 1: Kinematics & Motion
+- Vectors and Coordinate Systems
+- 1D Motion and Acceleration
+- Projectile Motion
+
+Unit 2: Newton's Laws & Dynamics
+- Force Vectors and Equilibrium
+- Friction and Circular Motion"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelNewSyllabusBtn">Cancel</button>
+        <button class="btn-primary" id="saveNewSyllabusBtn">Create Syllabus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Add Custom Topic to Current Unit -->
+  <div class="modal-overlay" id="addTopicModal" role="dialog" aria-modal="true" aria-labelledby="modalAddTopicTitle">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalAddTopicTitle">Add Topic to Syllabus</h3>
+        <button class="modal-close-btn" id="closeAddTopicModal" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="targetUnitSelect">Select Target Unit</label>
+          <select id="targetUnitSelect" class="form-select"></select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newTopicTitle">Topic Title</label>
+          <input type="text" id="newTopicTitle" class="form-input" placeholder="e.g. Graph Traversals: BFS & DFS" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newTopicDuration">Estimated Read Time</label>
+          <input type="text" id="newTopicDuration" class="form-input" placeholder="e.g. 25 min read" value="20 min read">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="newTopicNotes">Notes & Core Concepts</label>
+          <textarea id="newTopicNotes" class="form-textarea" placeholder="Type key concepts, definitions, formulas, or code patterns..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelAddTopicBtn">Cancel</button>
+        <button class="btn-primary" id="saveNewTopicBtn">Add Topic</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 3: Student Profile Settings -->
+  <div class="modal-overlay" id="profileModal" role="dialog" aria-modal="true" aria-labelledby="modalProfileTitle">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalProfileTitle">Student Study Profile</h3>
+        <button class="modal-close-btn" id="closeProfileModal" aria-label="Close dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="profileNameInput">Student Name</label>
+          <input type="text" id="profileNameInput" class="form-input" value="Alex Morgan">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="profileTargetExam">Target Exam / Goal Date</label>
+          <input type="date" id="profileTargetExam" class="form-input">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="profilePace">Study Pace</label>
+          <select id="profilePace" class="form-select">
+            <option value="balanced">Balanced (1-2 topics / day)</option>
+            <option value="intensive">Intensive Exam Prep (3-5 topics / day)</option>
+            <option value="casual">Casual Review (Weekly)</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-top: 0.5rem;">
+          <label class="form-label">Data Management</label>
+          <button class="btn-secondary" id="resetDefaultDataBtn" style="color: var(--accent-danger); border-color: rgba(239, 68, 68, 0.3);">
+            ↺ Reset to Default Sample Syllabi
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="cancelProfileBtn">Cancel</button>
+        <button class="btn-primary" id="saveProfileBtn">Save Profile</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
